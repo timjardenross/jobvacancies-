@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    env_file: .env
+    volumes:
+      - ./scraper.log:/app/scraper.log
+    command: python -m src.cli scrape --email
+
+  web:
+    build: .
+    env_file: .env
+    ports:
+      - "5000:5000"
+    command: python web/app.py
+    restart: unless-stopped

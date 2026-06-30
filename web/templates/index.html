@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ASX Jobs</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+  <span class="nav-brand">ASX Jobs</span>
+  <div class="nav-links">
+    <a href="/" class="active">Jobs</a>
+    <a href="/stats">Stats</a>
+  </div>
+</nav>
+
+<div class="container">
+  {% if demo_mode %}
+  <div class="demo-banner">Demo mode — connect Supabase to see real jobs</div>
+  {% endif %}
+  <div class="filters-bar">
+    <form method="get" action="/" class="filters-form">
+      <select name="company">
+        <option value="">All companies</option>
+        {% for c in companies %}
+          <option value="{{ c }}" {% if filters.company == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+      <select name="sector">
+        <option value="">All sectors</option>
+        {% for s in sectors %}
+          <option value="{{ s }}" {% if filters.sector == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <select name="min_score">
+        <option value="0" {% if filters.min_score == 0 %}selected{% endif %}>Any score</option>
+        <option value="15" {% if filters.min_score == 15 %}selected{% endif %}>Score ≥ 15</option>
+        <option value="30" {% if filters.min_score == 30 %}selected{% endif %}>Score ≥ 30</option>
+        <option value="45" {% if filters.min_score == 45 %}selected{% endif %}>Score ≥ 45</option>
+      </select>
+      <label class="checkbox-label">
+        <input type="checkbox" name="bookmarked" value="1" {% if filters.bookmarked_only %}checked{% endif %}>
+        Bookmarked only
+      </label>
+      <button type="submit" class="btn-primary">Filter</button>
+      <a href="/" class="btn-secondary">Clear</a>
+    </form>
+    <span class="job-count">{{ jobs|length }} jobs</span>
+  </div>
+
+  {% if jobs %}
+  <div class="jobs-table-wrapper">
+    <table class="jobs-table">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Company</th>
+          <th>Sector</th>
+          <th>Score</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+        <tr data-job-id="{{ job.id }}">
+          <td>
+            <a href="{{ job.url }}" target="_blank" rel="noopener" class="job-title">
+              {{ job.title }}
+            </a>
+            {% if job.description %}
+            <p class="job-desc">{{ job.description[:120] }}{% if job.description|length > 120 %}…{% endif %}</p>
+            {% endif %}
+          </td>
+          <td class="td-company">{{ job.company }}</td>
+          <td><span class="sector-badge">{{ job.sector }}</span></td>
+          <td>
+            <span class="score-badge {% if job.relevance_score >= 30 %}score-high{% elif job.relevance_score >= 15 %}score-mid{% else %}score-low{% endif %}">
+              {{ job.relevance_score }}
+            </span>
+          </td>
+          <td>
+            <button class="btn-bookmark {% if job.is_bookmarked %}bookmarked{% endif %}"
+                    onclick="toggleBookmark({{ job.id }}, this)"
+                    title="{{ 'Remove bookmark' if job.is_bookmarked else 'Bookmark' }}">
+              {% if job.is_bookmarked %}★{% else %}☆{% endif %}
+            </button>
+            <a href="{{ job.url }}" target="_blank" class="btn-apply">Apply →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>No jobs found. Run the scraper first: <code>python -m src.cli scrape</code></p>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+async function toggleBookmark(jobId, btn) {
+  const isBookmarked = btn.classList.contains('bookmarked');
+  const action = isBookmarked ? 'unbookmark' : 'bookmark';
+  const res = await fetch(`/api/bookmark/${jobId}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({action})
+  });
+  const data = await res.json();
+  if (data.success) {
+    btn.classList.toggle('bookmarked');
+    btn.textContent = btn.classList.contains('bookmarked') ? '★' : '☆';
+    btn.title = btn.classList.contains('bookmarked') ? 'Remove bookmark' : 'Bookmark';
+  }
+}
+</script>
+</body>
+</html>

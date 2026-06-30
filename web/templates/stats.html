@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ASX Jobs — Stats</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+  <span class="nav-brand">ASX Jobs</span>
+  <div class="nav-links">
+    <a href="/">Jobs</a>
+    <a href="/stats" class="active">Stats</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h2 class="page-title">Dashboard</h2>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ total }}</div>
+      <div class="stat-label">Total Jobs</div>
+    </div>
+    <div class="stat-card stat-card--accent">
+      <div class="stat-number">{{ today }}</div>
+      <div class="stat-label">Today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ week }}</div>
+      <div class="stat-label">This Week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ bookmarked }}</div>
+      <div class="stat-label">Bookmarked</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <h3 class="panel-title">Top Scoring Jobs</h3>
+      {% if top_jobs %}
+      <ul class="simple-list">
+        {% for job in top_jobs %}
+        <li>
+          <a href="{{ job.url }}" target="_blank">{{ job.title }}</a>
+          <span class="score-badge score-high">{{ job.relevance_score }}</span>
+          <small>{{ job.company }}</small>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted">No jobs yet — run the scraper.</p>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <h3 class="panel-title">Latest Jobs (Today)</h3>
+      {% if recent_jobs %}
+      <ul class="simple-list">
+        {% for job in recent_jobs %}
+        <li>
+          <a href="{{ job.url }}" target="_blank">{{ job.title }}</a>
+          <small>{{ job.company }}</small>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted">No jobs scraped today yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel mt-16">
+    <h3 class="panel-title">Quick Commands</h3>
+    <div class="code-block">
+      <code># Run scraper + send email</code><br>
+      <code>python -m src.cli scrape --email</code><br><br>
+      <code># Validate all feeds</code><br>
+      <code>python -m src.cli validate</code><br><br>
+      <code># Send test email</code><br>
+      <code>python -m src.cli test-email</code>
+    </div>
+  </div>
+</div>
+</body>
+</html>

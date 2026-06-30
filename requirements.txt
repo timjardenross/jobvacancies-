@@ -1,0 +1,8 @@
+feedparser==6.0.10
+playwright==1.40.0
+supabase==2.3.4
+flask==3.0.0
+python-dotenv==1.0.0
+click==8.1.7
+requests==2.31.0
+lxml==4.9.3
