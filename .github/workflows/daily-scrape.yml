@@ -22,7 +22,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          playwright install chromium --with-deps
+          playwright install-deps chromium
+          playwright install chromium
 
       - name: Run scraper + send email
         env:
