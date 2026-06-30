@@ -63,6 +63,7 @@ class SupabaseClient:
                         'source': job.get('source', 'Unknown'),
                         'relevance_score': job.get('relevance_score', 0),
                         'sector': job.get('sector', ''),
+                        'location': job.get('location', ''),
                         'is_bookmarked': False,
                     }).execute()
                     

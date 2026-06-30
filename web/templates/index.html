@@ -57,6 +57,7 @@
           <th>Role</th>
           <th>Company</th>
           <th>Sector</th>
+          <th>Location</th>
           <th>Score</th>
           <th>Actions</th>
         </tr>
@@ -74,6 +75,7 @@
           </td>
           <td class="td-company">{{ job.company }}</td>
           <td><span class="sector-badge">{{ job.sector }}</span></td>
+          <td class="td-company">{{ job.location or '—' }}</td>
           <td>
             <span class="score-badge {% if job.relevance_score >= 30 %}score-high{% elif job.relevance_score >= 15 %}score-mid{% else %}score-low{% endif %}">
               {{ job.relevance_score }}

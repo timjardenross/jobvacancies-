@@ -90,7 +90,7 @@ class ASXJobScraper:
                     'app_key':         ADZUNA_APP_KEY,
                     'results_per_page': 50,
                     'what':            query,
-                    'where':           'australia',
+                    'where':           'victoria',
                     'max_days_old':    1,
                     'sort_by':         'date',
                     'content-type':    'application/json',
@@ -111,6 +111,7 @@ class ASXJobScraper:
                         'posted_date': item.get('created', datetime.now().isoformat()),
                         'source':      f'Adzuna:{query}',
                         'sector':      item.get('category', {}).get('label', ''),
+                        'location':    item.get('location', {}).get('display_name', ''),
                     }
                     if job['url']:
                         jobs.append(job)
